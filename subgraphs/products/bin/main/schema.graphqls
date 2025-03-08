@@ -1,0 +1,14 @@
+extend type Query {
+  products: [Product]
+}
+
+type Product @key(fields: "id") {
+  id: ID!
+  name: String!
+  price: Float!
+  owner: User @provides(fields: "id")
+}
+
+extend type User @key(fields: "id") {
+  id: ID!
+}

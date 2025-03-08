@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  users:
+    build:
+      context: .
+      dockerfile: subgraphs/users/Dockerfile
+    ports:
+      - "4001:4001"
+    networks:
+      - graphql-network
+
+  products:
+    build:
+      context: .
+      dockerfile: subgraphs/products/Dockerfile
+    ports:
+      - "4002:4002"
+    networks:
+      - graphql-network
+
+  router:
+    image: ghcr.io/apollographql/router:v1.32.0
+    ports:
+      - "4000:4000"
+    environment:
+      - APOLLO_ROUTER_SUPERGRAPH_PATH=/etc/apollo/supergraph.graphql
+      - APOLLO_ROUTER_CONFIG_PATH=/etc/apollo/router.yaml
+    volumes:
+      - ./supergraph.graphql:/etc/apollo/supergraph.graphql
+      - ./router.yaml:/etc/apollo/router.yaml
+    networks:
+      - graphql-network
+    depends_on:
+      - users
+      - products
+
+networks:
+  graphql-network:
+    driver: bridge 

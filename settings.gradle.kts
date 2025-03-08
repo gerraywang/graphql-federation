@@ -7,3 +7,6 @@
  */
 
 rootProject.name = "graphql-federation"
+
+include("subgraphs:products")
+include("subgraphs:users")

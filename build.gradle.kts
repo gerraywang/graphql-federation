@@ -5,3 +5,39 @@
  * Learn more about Gradle by exploring our Samples at https://docs.gradle.org/8.13/samples
  * This project uses @Incubating APIs which are subject to change.
  */
+
+plugins {
+    kotlin("jvm") version "1.9.0"
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+
+subprojects {
+    apply(plugin = "kotlin")
+    
+    group = "com.example"
+    version = "1.0-SNAPSHOT"
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "17"
+            languageVersion = "1.9"
+        }
+    }
+
+    tasks.withType<JavaCompile> {
+        targetCompatibility = "17"
+        sourceCompatibility = "17"
+    }
+}
