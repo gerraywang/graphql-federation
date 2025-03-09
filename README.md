@@ -2,16 +2,42 @@
 
 A demonstration of GraphQL Federation using Kotlin, Apollo Router, and Ktor.
 
+## Architecture
+
+```
+Client → API → Gateway(Apollo Router) → Subgraphs (MST/TRAN)
+```
+
+The project implements a federated GraphQL architecture:
+
+1. **API** (`:api`)
+   - Provides RESTful endpoints
+   - Translates REST requests to GraphQL queries
+   - Handles request routing and aggregation
+
+2. **Apollo Router** (Gateway)
+   - Implements GraphQL federation
+   - Routes queries to appropriate subgraphs
+   - Combines responses from multiple subgraphs
+
+3. **Subgraphs**(Mock)
+   - MST (Master Data Service)
+     - Handles master data (customers, products)
+     - Provides basic entity information
+   - TRAN (Transaction Service)
+     - Manages transaction data (orders, payments)
+     - Handles business operations
+
 ## Project Structure
 
 ```
 .
-├── api/                 # API Gateway service
-├── subgraphs/          # GraphQL subgraphs
-│   ├── common/         # Shared code between subgraphs
-│   ├── mst/           # SubGraphQL: Master data service
-│   └── tran/          # SubGraphQL: Transaction service
-└── router.yaml         # SuperGraphQL: Apollo Router configuration
+├── api/             # API service
+├── subgraphs/       # GraphQL subgraphs
+│   ├── common/      # Shared code between subgraphs
+│   ├── mst/         # Master data service (customers, products)
+│   └── tran/        # Transaction service (orders, payments)
+└── gateway          # Apollo Router configuration
 ```
 
 ## Prerequisites
@@ -34,20 +60,21 @@ cd gateway && rover supergraph compose --config supergraph.yaml > supergraph.gra
 ./gradlew clean build
 ```
 
-3. Start the services:
+3. Start the services (in order):
 ```bash
-# Start Master Data Service
+# 1. Start Master Data Service
 ./gradlew :subgraphs:mst:run
 
-# Start Transaction Service
+# 2. Start Transaction Service
 ./gradlew :subgraphs:tran:run
 
-# Start Apollo Router
+# 3. Start Apollo Router
 cd gateway && RUST_LOG=debug ./router --config router.yaml --supergraph supergraph.graphql && cd ..
 
-# Start API Gateway
+# 4. Start API Gateway
 ./gradlew :api:run
 ```
+
 
 ## API Examples
 
