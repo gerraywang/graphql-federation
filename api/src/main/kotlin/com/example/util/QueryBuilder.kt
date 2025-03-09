@@ -12,16 +12,19 @@ object QueryBuilder {
         """.trimIndent()
     }
 
-    fun buildTableQuery(table: TableQuery, queryName: String, alias: String? = null): String {
+    fun buildTableQuery(
+        table: TableQuery,
+        queryName: String,
+        alias: String? = null
+    ): String {
+        val conditions = table.conditions?.let { buildConditions(it) } ?: ""
+        
         return """
             ${alias ?: table.alias}: $queryName(
                 args: {
                     tableName: "${table.tableName}",
                     fields: ${table.fields.map { "\"$it\"" }},
-                    ${table.conditions?.let { buildConditions(it) } ?: ""}
-                    ${table.pagination?.let { buildPagination(it) } ?: ""}
-                    ${table.sorting?.let { buildSorting(it) } ?: ""}
-                    ${table.transforms?.let { buildTransforms(it) } ?: ""}
+                    $conditions
                 }
             ) {
                 id
@@ -33,9 +36,12 @@ object QueryBuilder {
 
     private fun buildConditions(conditions: List<Condition>): String {
         if (conditions.isEmpty()) return ""
-        return "conditions: [${conditions.map { 
-            "{field: \"${it.field}\", operator: ${it.operator.toString().uppercase(Locale.getDefault())}, value: ${formatValue(it.value)}}"
-        }.joinToString(",")}]"
+        
+        return conditions.joinToString(",\n") { condition ->
+            """
+            ${condition.field}_${condition.operator.name.lowercase()}: "${condition.value}"
+            """.trimIndent()
+        }
     }
 
     private fun buildPagination(pagination: PaginationInput): String {

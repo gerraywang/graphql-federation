@@ -1,0 +1,49 @@
+# 表关系定义
+relations:
+  - name: "customer-orders"
+    mainTable: "customer"
+    joinTables:
+      - table: "order"
+        mainField: "id"
+        joinField: "customerId"
+        type: "ONE_TO_MANY"
+  
+  - name: "order-customer"
+    mainTable: "order"
+    joinTables:
+      - table: "customer"
+        mainField: "customerId"
+        joinField: "id"
+        type: "MANY_TO_ONE"
+
+  - name: "order-payment"
+    mainTable: "order"
+    joinTables:
+      - table: "payment"
+        mainField: "id"
+        joinField: "orderId"
+        type: "ONE_TO_ONE"
+
+# 查询定义
+queries:
+  order-customer:
+    mainTable:
+      tableName: order
+      fields: [orderNo, amount, status, createTime]
+      alias: order
+    relationName: order-customer
+    joins:
+      - tableName: customer
+        fields: [name, phone, email]
+        alias: customer
+
+  order-payment:
+    mainTable:
+      tableName: order
+      fields: [orderNo, amount, status]
+      alias: order
+    relationName: order-payment
+    joins:
+      - tableName: payment
+        fields: [paymentNo, paymentAmount, paymentStatus]
+        alias: payment 

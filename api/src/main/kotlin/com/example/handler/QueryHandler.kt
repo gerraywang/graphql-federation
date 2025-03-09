@@ -1,13 +1,13 @@
 package com.example.handler
 
 import com.example.GraphQLService
-import com.example.config.TableRelations
+import com.example.config.AppConfig
 import com.example.model.*
 import com.example.util.QueryBuilder
 
 abstract class BaseQueryHandler(
     protected val graphQLService: GraphQLService,
-    protected val tableRelations: TableRelations
+    protected val appConfig: AppConfig
 ) {
     protected fun getQueryName(tableName: String): String {
         return if (tableName in listOf("customer", "product")) {

@@ -7,14 +7,12 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import io.ktor.server.routing.*
-import com.example.config.TableRelationsLoader
-import com.example.config.QueryDefinitions
+import com.example.config.AppConfigLoader
 import com.example.handler.CommonQueryHandler
 import com.example.order.orderRoutes
 
 fun main() {
-    val tableRelations = TableRelationsLoader.load()
-    val queryDefinitions = QueryDefinitions()
+    val appConfig = AppConfigLoader.load()
     
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -25,7 +23,7 @@ fun main() {
         }
         
         val graphQLService = GraphQLService()
-        val commonQueryHandler = CommonQueryHandler(graphQLService, tableRelations, queryDefinitions)
+        val commonQueryHandler = CommonQueryHandler(graphQLService, appConfig)
         
         routing {
             // 通用查询路由

@@ -1,9 +1,9 @@
 package com.example.handler
 
 import com.example.GraphQLService
-import com.example.config.TableRelations
-import com.example.config.QueryDefinitions
+import com.example.config.AppConfig
 import com.example.config.QueryDefinition
+import com.example.config.JoinTable
 import com.example.model.*
 import com.example.util.QueryBuilder
 import io.ktor.server.application.*
@@ -12,13 +12,11 @@ import io.ktor.http.*
 
 class CommonQueryHandler(
     private val graphQLService: GraphQLService,
-    private val tableRelations: TableRelations,
-    private val queryDefinitions: QueryDefinitions
+    private val appConfig: AppConfig
 ) {
     suspend fun handleQuery(queryName: String, conditions: Map<String, List<String>>, call: ApplicationCall) {
         try {
-            // 获取查询定义
-            val definition = queryDefinitions.getDefinition(queryName)
+            val definition = appConfig.getQueryDefinition(queryName)
                 ?: throw IllegalArgumentException("Unknown query: $queryName")
             
             // 解析条件
@@ -55,12 +53,12 @@ class CommonQueryHandler(
         definition: QueryDefinition,
         conditions: List<Condition>
     ): String {
-        val relation = tableRelations.getRelation(definition.relationName)
+        val relation = appConfig.getRelation(definition.relationName)
             ?: throw IllegalArgumentException("Unknown relation: ${definition.relationName}")
 
         // 构建主表查询
         val mainQuery = QueryBuilder.buildTableQuery(
-            definition.mainTable,
+            definition.mainTable.toTableQuery(),
             getQueryName(definition.mainTable.tableName),
             "main"
         )
@@ -70,8 +68,13 @@ class CommonQueryHandler(
             val joinConfig = definition.joins.find { it.tableName == joinTable.table }
             if (joinConfig != null) {
                 val tableConditions = conditions.filter { it.field in joinConfig.fields }
-                val updatedConfig = joinConfig.copy(conditions = tableConditions)
-                QueryBuilder.buildTableQuery(updatedConfig.toTableQuery(), getQueryName(joinConfig.tableName))
+                val joinTableQuery = JoinTableQuery(
+                    tableName = joinConfig.tableName,
+                    fields = joinConfig.fields,
+                    alias = joinConfig.alias,
+                    conditions = tableConditions
+                ).toTableQuery()
+                QueryBuilder.buildTableQuery(joinTableQuery, getQueryName(joinConfig.tableName))
             } else {
                 QueryBuilder.buildTableQuery(
                     TableQuery(
