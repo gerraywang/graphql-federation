@@ -123,9 +123,9 @@ class ApiResource(
             val joinConfig = JoinConfig(
                 mainTable = definition.mainTable,
                 relationName = definition.relationName,
-                joins = definition.joins.map { join: JoinTableQuery ->  // 显式指定类型
+                joins = definition.joins.map { join ->
                     join.copy(
-                        conditions = conditions.filter { it.field in join.fields }
+                        conditions = conditions.toList()  // 转换为非空列表
                     )
                 }
             )

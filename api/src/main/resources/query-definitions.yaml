@@ -13,10 +13,10 @@ queries:
   product-inventory:
     mainTable:
       tableName: product
-      fields: [productName, price]
+      fields: [name, price, code]
       alias: product
     relationName: product-inventory
     joins:
       - tableName: inventory
-        fields: [quantity, location]
+        fields: [quantity, location, status]
         alias: inventory 
