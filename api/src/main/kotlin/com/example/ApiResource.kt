@@ -8,7 +8,7 @@ class ApiResource(
     private val commonQueryHandler: CommonQueryHandler
 ) {
     fun Route.apiRoutes() {
-        // 通用查询端点
+        // common query endpoint
         get("/api/{queryName}") {
             val queryName = call.parameters["queryName"]!!
             commonQueryHandler.handleQuery(

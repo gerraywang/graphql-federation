@@ -12,6 +12,6 @@ class ProductInventoryHandler(
 ) : BaseQueryHandler(graphQLService, appConfig) {
     fun handleQuery(queryDefinition: QueryDefinition, conditions: Map<String, List<String>>) {
         val parsedConditions = parseConditionsFromParams(conditions)
-        // 处理查询逻辑...
+        // ToDo query
     }
 } 

@@ -19,13 +19,13 @@ class CommonQueryHandler(
             val definition = appConfig.getQueryDefinition(queryName)
                 ?: throw IllegalArgumentException("Unknown query: $queryName")
             
-            // 解析条件
+            // Parse conditions
             val parsedConditions = parseConditionsFromParams(conditions)
             
-            // 构建查询
+            // Build query
             val query = buildQueryFromDefinition(definition, parsedConditions)
             
-            // 执行查询
+            // Execute query
             val result = graphQLService.executeQuery(query)
             call.respond(result)
         } catch (e: Exception) {
@@ -56,14 +56,14 @@ class CommonQueryHandler(
         val relation = appConfig.getRelation(definition.relationName)
             ?: throw IllegalArgumentException("Unknown relation: ${definition.relationName}")
 
-        // 构建主表查询
+        // Build main table query
         val mainQuery = QueryBuilder.buildTableQuery(
             definition.mainTable.toTableQuery(),
             getQueryName(definition.mainTable.tableName),
             "main"
         )
 
-        // 构建关联表查询
+        // Build join table queries
         val joinQueries = relation.joinTables.map { joinTable ->
             val joinConfig = definition.joins.find { it.tableName == joinTable.table }
             if (joinConfig != null) {

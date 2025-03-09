@@ -26,12 +26,12 @@ fun main() {
         val commonQueryHandler = CommonQueryHandler(graphQLService, appConfig)
         
         routing {
-            // 通用查询路由
+            // common query endpoint
             with(ApiResource(commonQueryHandler)) { 
                 apiRoutes()
             }
             
-            // 订单专用路由
+            // order endpoint
             orderRoutes(commonQueryHandler)
         }
     }.start(wait = true)

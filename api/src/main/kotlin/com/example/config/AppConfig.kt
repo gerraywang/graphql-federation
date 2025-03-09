@@ -7,7 +7,7 @@ import java.io.InputStreamReader
 import com.example.model.TableQuery
 import com.example.model.JoinTableQuery
 
-// 应用配置
+// Application configuration
 class AppConfig {
     var relations: List<Relation> = emptyList()
     var queries: Map<String, QueryDefinition> = emptyMap()
@@ -18,14 +18,14 @@ class AppConfig {
     fun getQueryDefinition(name: String): QueryDefinition? = queries[name]
 }
 
-// 查询定义
+// Query definition
 class QueryDefinition {
     var mainTable: TableQueryConfig = TableQueryConfig()
     var relationName: String = ""
     var joins: List<JoinTableQueryConfig> = emptyList()
 }
 
-// 配置类版本的 TableQuery
+// Configuration class version of TableQuery
 class TableQueryConfig {
     var tableName: String = ""
     var fields: List<String> = emptyList()
@@ -38,7 +38,7 @@ class TableQueryConfig {
     )
 }
 
-// 配置类版本的 JoinTableQuery
+// Configuration class version of JoinTableQuery
 class JoinTableQueryConfig {
     var tableName: String = ""
     var fields: List<String> = emptyList()
@@ -51,14 +51,14 @@ class JoinTableQueryConfig {
     )
 }
 
-// 关系定义
+// Relation definition
 class Relation {
     var name: String = ""
     var mainTable: String = ""
     var joinTables: List<JoinTable> = emptyList()
 }
 
-// 连接表定义
+// Join table definition
 class JoinTable {
     var table: String = ""
     var mainField: String = ""
@@ -67,14 +67,14 @@ class JoinTable {
     var parentTable: String? = null
 }
 
-// 连接类型
+// Join type
 enum class JoinType {
     ONE_TO_ONE,
     ONE_TO_MANY,
     MANY_TO_ONE
 }
 
-// 配置加载器
+// Configuration loader
 object AppConfigLoader {
     fun load(configPath: String = "/app-config.yaml"): AppConfig {
         val loaderOptions = LoaderOptions()

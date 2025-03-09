@@ -11,12 +11,12 @@ import com.example.model.DynamicEntity
 import com.example.model.DynamicResult
 import com.example.model.*
 
-// Transaction数据源模拟
+// Transaction data source simulation
 object TranDataSource {
     private val tables = mutableMapOf<String, List<DynamicEntity>>()
 
     init {
-        // 模拟交易数据
+        // Simulate transaction data
         tables["order"] = listOf(
             DynamicEntity("1", mapOf(
                 "orderNo" to "ORD001",

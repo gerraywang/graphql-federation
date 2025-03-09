@@ -1,11 +1,11 @@
 package com.example.model
 
-// 查询配置
+// Query configuration
 data class QueryConfig(
     val queries: List<String>
 )
 
-// 表查询
+// Table query
 data class TableQuery(
     val tableName: String,
     val fields: List<String>,
@@ -27,14 +27,14 @@ data class JoinTableQuery(
     )
 }
 
-// 查询条件
+// Query conditions
 data class Condition(
     val field: String,
     val operator: OperatorType,
     val value: Any?
 )
 
-// 操作符类型
+// Operator type
 enum class OperatorType {
     EQ,    // equals
     NEQ,   // not equals
@@ -47,13 +47,13 @@ enum class OperatorType {
     NIN    // not in
 }
 
-// 分页
+// Pagination
 data class PaginationInput(
     val offset: Int,
     val limit: Int
 )
 
-// 排序
+// Sorting
 data class SortField(
     val field: String,
     val direction: SortDirection
@@ -64,7 +64,7 @@ enum class SortDirection {
     DESC
 }
 
-// 字段转换
+// Field transformation
 data class Transform(
     val field: String,
     val type: TransformType,

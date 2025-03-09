@@ -1,4 +1,4 @@
-# 表关系定义
+# Table relationship definitions
 relations:
   - name: "customer-orders"
     mainTable: "customer"
@@ -24,7 +24,7 @@ relations:
         joinField: "orderId"
         type: "ONE_TO_ONE"
 
-# 查询定义
+# Query definitions
 queries:
   order-customer:
     mainTable:

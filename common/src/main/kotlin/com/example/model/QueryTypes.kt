@@ -1,6 +1,6 @@
 package com.example.model
 
-// 查询参数包装类
+// Query parameters wrapper
 data class QueryArgs(
     val tableName: String,
     val fields: List<String>,
@@ -10,7 +10,7 @@ data class QueryArgs(
     val transforms: List<Transform>? = null
 )
 
-// 输入类型定义
+// Input type definitions
 data class Condition(
     val field: String,
     val operator: OperatorType,

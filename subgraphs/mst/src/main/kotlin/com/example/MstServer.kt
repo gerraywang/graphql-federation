@@ -9,30 +9,30 @@ import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
 import com.example.model.DynamicEntity
 import com.example.model.DynamicResult
-import com.example.model.*  // 添加这行导入
+import com.example.model.* 
 
-// MST数据源模拟
+// MST data source simulation
 object MstDataSource {
     private val tables = mutableMapOf<String, List<com.example.model.DynamicEntity>>()
 
     init {
-        // 模拟MST数据
+        // Simulate MST data
         tables["customer"] = listOf(
             DynamicEntity("1", mapOf(
-                "name" to "张三",
+                "name" to "John Smith",
                 "age" to 30,
-                "address" to "北京"
+                "address" to "Beijing"
             ), "mst"),
             DynamicEntity("2", mapOf(
-                "name" to "李四",
+                "name" to "Mike Johnson",
                 "age" to 25,
-                "address" to "上海"
+                "address" to "Shanghai"
             ), "mst")
         )
         
         tables["product"] = listOf(
             DynamicEntity("1", mapOf(
-                "name" to "商品A",
+                "name" to "Product A",
                 "price" to 100.00,
                 "stock" to 50
             ), "mst")
@@ -70,10 +70,10 @@ fun main() {
             schema {
                 query("queryMstTable") {
                     resolver { args: QueryArgs ->
-                        // 处理查询条件
+                        // Process query conditions
                         var results = MstDataSource.getTableData(args.tableName, args.fields)
                         
-                        // 应用条件过滤
+                        // Apply condition filters
                         args.conditions?.let { conds ->
                             results = results.filter { result ->
                                 conds.all { condition ->
@@ -86,7 +86,7 @@ fun main() {
                             }
                         }
                         
-                        // 应用分页
+                        // Apply pagination
                         args.pagination?.let { page ->
                             results = results.drop(page.offset).take(page.limit)
                         }
@@ -115,7 +115,7 @@ fun main() {
     }.start(wait = true)
 }
 
-// 查询参数包装类
+// Query parameters wrapper
 data class QueryArgs(
     val tableName: String,
     val fields: List<String>,
@@ -125,7 +125,7 @@ data class QueryArgs(
     val transforms: List<Transform>? = null
 )
 
-// 输入类型定义
+// Input type definitions
 data class Condition(
     val field: String,
     val operator: OperatorType,

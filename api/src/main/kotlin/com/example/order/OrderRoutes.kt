@@ -6,7 +6,6 @@ import com.example.handler.CommonQueryHandler
 
 fun Route.orderRoutes(commonQueryHandler: CommonQueryHandler) {
     route("/orders") {
-        // 查询订单及客户信息
         get {
             commonQueryHandler.handleQuery(
                 queryName = "order-customer",
@@ -17,7 +16,6 @@ fun Route.orderRoutes(commonQueryHandler: CommonQueryHandler) {
             )
         }
 
-        // 查询订单及支付信息
         get("/payment") {
             commonQueryHandler.handleQuery(
                 queryName = "order-payment",
