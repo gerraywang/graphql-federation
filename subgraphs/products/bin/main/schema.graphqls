@@ -1,4 +1,10 @@
-extend type Query {
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.0",
+        import: ["@key", "@external", "@shareable"])
+
+type Query {
+  queryTable(tableName: String!, fields: [String!]!): [DynamicResult]
+  getAvailableFields(tableName: String!): [String!]!
   products: [Product]
 }
 
@@ -6,9 +12,17 @@ type Product @key(fields: "id") {
   id: ID!
   name: String!
   price: Float!
-  owner: User @provides(fields: "id")
+  owner: User
 }
 
 extend type User @key(fields: "id") {
   id: ID!
 }
+
+type DynamicResult {
+  id: ID!
+  fieldName: String!
+  fieldValue: String!
+}
+
+scalar JSONObject

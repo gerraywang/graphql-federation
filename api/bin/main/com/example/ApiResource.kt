@@ -11,20 +11,15 @@ class ApiResource {
     @Inject
     lateinit var graphQLService: GraphQLService
 
-    @GET
-    @Path("/products")
-    fun getProducts(): Map<String, Any?> {
+    @POST
+    @Path("/query")
+    fun queryTable(request: QueryRequest): Map<String, Any?> {
         val query = """
             query {
-                products {
+                queryTable(tableName: "${request.tableName}", fields: ${request.fields.map { "\"$it\"" }}) {
                     id
-                    name
-                    price
-                    owner {
-                        id
-                        name
-                        email
-                    }
+                    fieldName
+                    fieldValue
                 }
             }
         """.trimIndent()
@@ -33,18 +28,19 @@ class ApiResource {
     }
 
     @GET
-    @Path("/users")
-    fun getUsers(): Map<String, Any?> {
+    @Path("/fields/{tableName}")
+    fun getAvailableFields(@PathParam("tableName") tableName: String): Map<String, Any?> {
         val query = """
             query {
-                users {
-                    id
-                    name
-                    email
-                }
+                getAvailableFields(tableName: "$tableName")
             }
         """.trimIndent()
         
         return graphQLService.executeQuery(query)
     }
-} 
+}
+
+data class QueryRequest(
+    val tableName: String,
+    val fields: List<String>
+) 

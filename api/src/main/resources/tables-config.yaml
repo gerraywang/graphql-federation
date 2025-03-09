@@ -1,0 +1,17 @@
+tables:
+  products:
+    fields:
+      - name
+      - price
+      - owner_id
+    relationships:
+      owner:
+        table: users
+        key: owner_id
+        fields:
+          - name
+          - email
+  users:
+    fields:
+      - name
+      - email 

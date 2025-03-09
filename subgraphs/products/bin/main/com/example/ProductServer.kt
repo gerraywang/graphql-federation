@@ -11,44 +11,76 @@ import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 
-data class Product(val id: String, val name: String, val price: Float, val owner: User)
-data class User(val id: String)
+// 通用数据模型
+data class DynamicEntity(
+    val id: String,
+    val fields: Map<String, Any?>
+)
 
-fun SchemaBuilder.productSchema() {
-    query("products") {
-        resolver { ->
-            listOf(
-                Product("101", "Laptop", 999.99f, User("1")),
-                Product("102", "Phone", 499.99f, User("2"))
-            )
+data class DynamicResult(
+    val id: String,
+    val fieldName: String,
+    val fieldValue: String
+)
+
+// 数据源模拟（实际项目中可以替换为数据库）
+object DataSource {
+    private val tables = mutableMapOf<String, List<DynamicEntity>>()
+
+    init {
+        // 模拟数据
+        tables["products"] = listOf(
+            DynamicEntity("101", mapOf(
+                "name" to "Laptop",
+                "price" to 999.99,
+                "owner_id" to "1"
+            )),
+            DynamicEntity("102", mapOf(
+                "name" to "Phone",
+                "price" to 499.99,
+                "owner_id" to "2"
+            ))
+        )
+    }
+
+    fun getTableData(tableName: String, fields: List<String>): List<DynamicResult> {
+        return tables[tableName]?.flatMap { entity ->
+            fields.mapNotNull { field ->
+                entity.fields[field]?.let { value ->
+                    DynamicResult(entity.id, field, value.toString())
+                }
+            }
+        } ?: emptyList()
+    }
+    
+    fun getFields(tableName: String): Set<String> {
+        return tables[tableName]?.firstOrNull()?.fields?.keys ?: emptySet()
+    }
+}
+
+fun SchemaBuilder.dynamicSchema() {
+    query("queryTable") {
+        resolver { tableName: String, fields: List<String> ->
+            DataSource.getTableData(tableName, fields)
         }
     }
 
-    type<Product> {
-        description = "Product type"
-        
-        property(Product::id) {
-            description = "Product ID"
-        }
-        
-        property(Product::name) {
-            description = "Product name"
-        }
-        
-        property(Product::price) {
-            description = "Product price"
-        }
-        
-        property(Product::owner) {
-            description = "Product owner"
+    query("getAvailableFields") {
+        resolver { tableName: String ->
+            DataSource.getFields(tableName)
         }
     }
 
-    type<User> {
-        description = "User type"
-        
-        property(User::id) {
-            description = "User ID"
+    type<DynamicResult> {
+        description = "Dynamic query result"
+        property(DynamicResult::id) {
+            description = "Entity ID"
+        }
+        property(DynamicResult::fieldName) {
+            description = "Field name"
+        }
+        property(DynamicResult::fieldValue) {
+            description = "Field value"
         }
     }
 }
@@ -65,12 +97,7 @@ fun main() {
             playground = true
             endpoint = "/graphql"
             schema {
-                productSchema()
-            }
-        }
-        routing {
-            get("/") {
-                call.respondText("Products Subgraph Running")
+                dynamicSchema()
             }
         }
     }.start(wait = true)

@@ -7,6 +7,18 @@ application {
     mainClass.set("com.example.UserServerKt")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
 dependencies {
     // Ktor server dependencies
     implementation("io.ktor:ktor-server-core-jvm:2.3.7")
