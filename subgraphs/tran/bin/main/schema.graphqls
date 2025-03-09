@@ -1,0 +1,10 @@
+type Query {
+  queryTranTable(tableName: String!, fields: [String!]!): [DynamicResult!]!
+  getTranAvailableFields(tableName: String!): [String!]!
+}
+
+type DynamicResult {
+  id: ID!
+  fieldName: String!
+  fieldValue: String!
+} 

@@ -1,10 +1,10 @@
 federation_version: 2
 subgraphs:
-  users:
+  mst:
     routing_url: http://localhost:4001/graphql
     schema:
-      file: ./subgraphs/users/src/main/resources/schema.graphqls
-  products:
+      file: subgraphs/mst/src/main/resources/schema.graphqls
+  tran:
     routing_url: http://localhost:4002/graphql
     schema:
-      file: ./subgraphs/products/src/main/resources/schema.graphqls
+      file: subgraphs/tran/src/main/resources/schema.graphqls

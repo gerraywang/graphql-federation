@@ -7,23 +7,12 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
-
-// 数据模型
-data class DynamicEntity(
-    val id: String,
-    val fields: Map<String, Any?>,
-    val source: String = "mst"
-)
-
-data class DynamicResult(
-    val id: String,
-    val fieldName: String,
-    val fieldValue: String
-)
+import com.example.model.DynamicEntity
+import com.example.model.DynamicResult
 
 // MST数据源模拟
 object MstDataSource {
-    private val tables = mutableMapOf<String, List<DynamicEntity>>()
+    private val tables = mutableMapOf<String, List<com.example.model.DynamicEntity>>()
 
     init {
         // 模拟MST数据
@@ -32,12 +21,12 @@ object MstDataSource {
                 "name" to "张三",
                 "age" to 30,
                 "address" to "北京"
-            )),
+            ), "mst"),
             DynamicEntity("2", mapOf(
                 "name" to "李四",
                 "age" to 25,
                 "address" to "上海"
-            ))
+            ), "mst")
         )
         
         tables["product"] = listOf(
@@ -45,7 +34,7 @@ object MstDataSource {
                 "name" to "商品A",
                 "price" to 100.00,
                 "stock" to 50
-            ))
+            ), "mst")
         )
     }
 

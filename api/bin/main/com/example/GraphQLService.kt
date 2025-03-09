@@ -1,27 +1,28 @@
 package com.example
 
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.ws.rs.client.ClientBuilder
-import jakarta.ws.rs.client.Entity
-import jakarta.ws.rs.core.MediaType
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.gson.*
 
-@ApplicationScoped
 class GraphQLService {
-    private val client = ClientBuilder.newClient()
-    private val objectMapper = ObjectMapper()
+    private val client = HttpClient {
+        install(ContentNegotiation) {
+            gson()
+        }
+    }
     private val routerUrl = "http://localhost:4000/graphql"
 
-    fun executeQuery(query: String): Map<String, Any?> {
-        val request = mapOf(
-            "query" to query
-        )
-
-        val response = client.target(routerUrl)
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(request, MediaType.APPLICATION_JSON))
-
-        return objectMapper.readValue(response.readEntity(String::class.java))
+    suspend fun executeQuery(query: String): String {
+        val response = client.post(routerUrl) {
+            contentType(ContentType.Application.Json)
+            setBody(mapOf(
+                "query" to query,
+                "variables" to emptyMap<String, Any>()
+            ))
+        }
+        return response.bodyAsText()
     }
 } 

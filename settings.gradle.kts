@@ -8,5 +8,7 @@
 
 rootProject.name = "graphql-services"
 
+include("common")
 include("subgraphs:mst")
 include("subgraphs:tran")
+include("api")

@@ -13,7 +13,10 @@ headers:
   all:
     request:
       - propagate:
-          named: "*"
+          named: "Authorization"
 
 sandbox:
   enabled: true
+
+include_subgraph_errors:
+  all: true

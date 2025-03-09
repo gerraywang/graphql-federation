@@ -1,0 +1,10 @@
+type Query {
+  queryMstTable(tableName: String!, fields: [String!]!): [DynamicResult!]!
+  getMstAvailableFields(tableName: String!): [String!]!
+}
+
+type DynamicResult {
+  id: ID!
+  fieldName: String!
+  fieldValue: String!
+} 

@@ -18,6 +18,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "java")
     
     group = "com.example"
     version = "1.0-SNAPSHOT"
@@ -26,5 +27,10 @@ subprojects {
         kotlinOptions {
             jvmTarget = "17"
         }
+    }
+
+    configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }

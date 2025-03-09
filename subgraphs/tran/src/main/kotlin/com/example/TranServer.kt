@@ -7,19 +7,8 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
-
-// 数据模型
-data class DynamicEntity(
-    val id: String,
-    val fields: Map<String, Any?>,
-    val source: String = "tran"
-)
-
-data class DynamicResult(
-    val id: String,
-    val fieldName: String,
-    val fieldValue: String
-)
+import com.example.model.DynamicEntity
+import com.example.model.DynamicResult
 
 // Transaction数据源模拟
 object TranDataSource {
@@ -33,13 +22,13 @@ object TranDataSource {
                 "amount" to 1000.00,
                 "customerId" to "1",
                 "status" to "COMPLETED"
-            )),
+            ), "tran"),
             DynamicEntity("2", mapOf(
                 "orderNo" to "ORD002",
                 "amount" to 500.00,
                 "customerId" to "2",
                 "status" to "PENDING"
-            ))
+            ), "tran")
         )
         
         tables["payment"] = listOf(
@@ -48,7 +37,7 @@ object TranDataSource {
                 "orderId" to "1",
                 "amount" to 1000.00,
                 "status" to "SUCCESS"
-            ))
+            ), "tran")
         )
     }
 
