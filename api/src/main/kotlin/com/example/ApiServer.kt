@@ -8,9 +8,11 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import io.ktor.server.routing.*
 import com.example.config.TableRelationsLoader
+import com.example.config.QueryDefinitions
 
 fun main() {
     val tableRelations = TableRelationsLoader.load()
+    val queryDefinitions = QueryDefinitions()
     
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
@@ -21,7 +23,7 @@ fun main() {
         }
         
         val graphQLService = GraphQLService()
-        val apiResource = ApiResource(graphQLService, tableRelations)
+        val apiResource = ApiResource(graphQLService, tableRelations, queryDefinitions)
         
         routing {
             with(apiResource) { 

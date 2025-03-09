@@ -1,0 +1,22 @@
+queries:
+  customer-orders:
+    mainTable:
+      tableName: customer
+      fields: [name, age]
+      alias: customer
+    relationName: customer-orders
+    joins:
+      - tableName: order
+        fields: [orderNo, amount, status]
+        alias: orders
+
+  product-inventory:
+    mainTable:
+      tableName: product
+      fields: [productName, price]
+      alias: product
+    relationName: product-inventory
+    joins:
+      - tableName: inventory
+        fields: [quantity, location]
+        alias: inventory 

@@ -6,12 +6,25 @@ import io.ktor.server.routing.*
 import io.ktor.server.request.*
 import com.example.config.TableRelations
 import com.example.config.JoinTable
-import com.example.model.*  // 导入共享模型类
-import java.util.Locale  // 添加这行
+import com.example.model.*  // 导入所有模型类
+import java.util.Locale
+import com.example.config.QueryDefinitions
+
+// 在 model 包中创建这些配置类
+data class MultiTableConfig(
+    val tables: List<com.example.model.TableQuery>
+)
+
+data class JoinConfig(
+    val mainTable: com.example.model.TableQuery,
+    val relationName: String,
+    val joins: List<com.example.model.JoinTableQuery>? = null
+)
 
 class ApiResource(
     private val graphQLService: GraphQLService,
-    private val tableRelations: TableRelations
+    private val tableRelations: TableRelations,
+    private val queryDefinitions: QueryDefinitions
 ) {
     fun Route.apiRoutes() {
         // 1. 多表查询
@@ -89,9 +102,61 @@ class ApiResource(
             val result = graphQLService.executeQuery(query)
             call.respond(result)
         }
+
+        // 添加新的REST端点
+        get("/api/{queryName}") {
+            val queryName = call.parameters["queryName"]!!
+            val definition = queryDefinitions.getDefinition(queryName)
+                ?: throw IllegalArgumentException("Unknown query: $queryName")
+            
+            // 从请求参数获取条件
+            val conditions = call.request.queryParameters.entries().mapNotNull { entry ->
+                val (field, operator) = entry.key.split("_", limit = 2)
+                Condition(
+                    field = field,
+                    operator = OperatorType.valueOf(operator.uppercase()),
+                    value = entry.value.firstOrNull()
+                )
+            }
+            
+            // 应用条件到查询定义
+            val joinConfig = JoinConfig(
+                mainTable = definition.mainTable,
+                relationName = definition.relationName,
+                joins = definition.joins.map { join: JoinTableQuery ->  // 显式指定类型
+                    join.copy(
+                        conditions = conditions.filter { it.field in join.fields }
+                    )
+                }
+            )
+            
+            // 执行查询
+            val relation = tableRelations.getRelation(joinConfig.relationName)
+                ?: throw IllegalArgumentException("Unknown relation: ${joinConfig.relationName}")
+            
+            val mainQuery = buildTableQuery(joinConfig.mainTable, getQueryName(joinConfig.mainTable.tableName), "main")
+            val joinQueries = relation.joinTables.map { joinTable ->
+                val joinConfig = joinConfig.joins?.find { it.tableName == joinTable.table }
+                if (joinConfig != null) {
+                    buildJoinQuery(joinConfig, joinTable)
+                } else {
+                    buildDefaultJoinQuery(joinTable)
+                }
+            }.joinToString("\n")
+            
+            val query = """
+                query {
+                    $mainQuery
+                    $joinQueries
+                }
+            """.trimIndent()
+            
+            val result = graphQLService.executeQuery(query)
+            call.respond(result)
+        }
     }
 
-    private fun buildTableQuery(table: TableQuery, queryName: String, alias: String? = null): String {
+    private fun buildTableQuery(table: com.example.model.TableQuery, queryName: String, alias: String? = null): String {
         return """
             ${alias ?: table.alias}: $queryName(
                 args: {
@@ -145,7 +210,7 @@ class ApiResource(
         }
     }
 
-    private fun buildJoinQuery(config: JoinTableQuery, relation: com.example.config.JoinTable): String {
+    private fun buildJoinQuery(config: com.example.model.JoinTableQuery, relation: com.example.config.JoinTable): String {
         val queryName = if (config.tableName in listOf("customer", "product")) {
             "queryMstTable"
         } else {
@@ -158,60 +223,21 @@ class ApiResource(
     }
 
     private fun buildDefaultJoinQuery(relation: com.example.config.JoinTable): String {
-        val queryName = if (relation.table in listOf("customer", "product")) {
+        return buildTableQuery(
+            com.example.model.TableQuery(
+                tableName = relation.table,
+                fields = listOf("*"),
+                alias = relation.table
+            ),
+            getQueryName(relation.table)
+        )
+    }
+
+    private fun getQueryName(tableName: String): String {
+        return if (tableName in listOf("customer", "product")) {
             "queryMstTable"
         } else {
             "queryTranTable"
         }
-        return buildTableQuery(
-            TableQuery(
-                tableName = relation.table,
-                fields = listOf("*"),  // 默认查询所有字段
-                alias = relation.table
-            ),
-            queryName
-        )
     }
-}
-
-// 查询配置类
-data class MultiTableConfig(
-    val tables: List<TableQuery>
-)
-
-data class TableQuery(
-    val tableName: String,
-    val fields: List<String>,
-    val alias: String,
-    val conditions: List<com.example.model.Condition>? = null,
-    val pagination: com.example.model.PaginationInput? = null,
-    val sorting: List<com.example.model.SortField>? = null,
-    val transforms: List<com.example.model.Transform>? = null
-)
-
-// 关联查询配置
-data class JoinConfig(
-    val mainTable: TableQuery,
-    val relationName: String,  // 引用配置中定义的关系名称
-    val joins: List<JoinTableQuery>? = null  // 可选的额外join配置
-)
-
-data class JoinTableQuery(
-    val tableName: String,
-    val fields: List<String>,
-    val alias: String,
-    val conditions: List<com.example.model.Condition>? = null,
-    val pagination: com.example.model.PaginationInput? = null,
-    val sorting: List<com.example.model.SortField>? = null,
-    val transforms: List<com.example.model.Transform>? = null
-) {
-    fun toTableQuery() = TableQuery(
-        tableName = tableName,
-        fields = fields,
-        alias = alias,
-        conditions = conditions,
-        pagination = pagination,
-        sorting = sorting,
-        transforms = transforms
-    )
 } 
