@@ -6,8 +6,7 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-rootProject.name = "graphql-federation"
+rootProject.name = "graphql-services"
 
-include("subgraphs:products")
-include("subgraphs:users")
-include("api")
+include("subgraphs:mst")
+include("subgraphs:tran")

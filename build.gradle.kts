@@ -7,37 +7,24 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.0" apply false
 }
 
 allprojects {
     repositories {
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
     }
 }
 
 subprojects {
-    apply(plugin = "kotlin")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     
     group = "com.example"
     version = "1.0-SNAPSHOT"
 
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
-    }
-
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = "17"
-            languageVersion = "1.9"
         }
-    }
-
-    tasks.withType<JavaCompile> {
-        targetCompatibility = "17"
-        sourceCompatibility = "17"
     }
 }
