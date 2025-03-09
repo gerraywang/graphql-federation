@@ -33,3 +33,25 @@ supergraph.graphql
 
 # Ignore Gradle build output directory
 build
+
+# Gradle
+.gradle/
+build/
+bin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Compiled files
+*.class
+*.jar
+!gradle-wrapper.jar
+
+# Logs
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
