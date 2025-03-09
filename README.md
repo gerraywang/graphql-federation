@@ -1,26 +1,79 @@
-# graphql-federation
+# GraphQL Federation Demo
 
-run for local
-# 1. 启动 users 服务
-./gradlew :subgraphs:users:run
+A demonstration of GraphQL Federation using Kotlin, Apollo Router, and Ktor.
 
-# 2. 在新终端启动 products 服务
-./gradlew :subgraphs:products:run
+## Project Structure
 
-# 3. 在新终端启动 router
-./router --config router.yaml --supergraph supergraph.graphql
+```
+.
+├── api/                 # API Gateway service
+├── subgraphs/          # GraphQL subgraphs
+│   ├── common/         # Shared code between subgraphs
+│   ├── mst/           # SubGraphQL: Master data service
+│   └── tran/          # SubGraphQL: Transaction service
+└── router.yaml         # SuperGraphQL: Apollo Router configuration
+```
 
-# 测试 users 服务
-curl -X POST http://localhost:4001/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query":"{ users { id name email } }"}'
+## Prerequisites
 
-# 测试 products 服务
-curl -X POST http://localhost:4002/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query":"{ products { id name price } }"}'
+- JDK 11 or later
+- Gradle 7.x or later
+- [Rover CLI](https://www.apollographql.com/docs/rover/getting-started)
 
-# 测试 router
-curl -X POST http://localhost:4000/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query":"{ products { id name price owner { id name email } } }"}'
+## Getting Started
+
+### Local Development
+
+1. Generate the supergraph schema:
+```bash
+rover supergraph compose --config supergraph.yaml > supergraph.graphql
+```
+
+2. Build the project:
+```bash
+./gradlew clean build
+```
+
+3. Start the services:
+```bash
+# Start Master Data Service
+./gradlew :subgraphs:mst:run
+
+# Start Transaction Service
+./gradlew :subgraphs:tran:run
+
+# Start Apollo Router
+RUST_LOG=debug ./router --config router.yaml --supergraph supergraph.graphql
+
+# Start API Gateway
+./gradlew :api:run
+```
+
+## API Examples
+
+### Query Orders
+Get all orders:
+```bash
+curl "http://localhost:8080/orders"
+```
+
+### Filter Orders
+
+By amount:
+```bash
+curl "http://localhost:8080/orders?amount_gt=1000"
+```
+
+By customer name:
+```bash
+curl "http://localhost:8080/orders?customer.name_like=John"
+```
+
+By order status:
+```bash
+curl "http://localhost:8080/orders?status_eq=PENDING"
+```
+
+## Contributing
+
+Feel free to submit issues and enhancement requests.
