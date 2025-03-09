@@ -1,9 +1,10 @@
 plugins {
+    kotlin("jvm")
     application
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":subgraphs:common"))
     implementation(kotlin("stdlib"))
     
     // Ktor
@@ -16,9 +17,6 @@ dependencies {
     // GraphQL
     implementation("com.apurebase:kgraphql:0.19.0")
     implementation("com.apurebase:kgraphql-ktor:0.19.0")
-    
-    // Logging
-    implementation("ch.qos.logback:logback-classic:1.4.11")
 }
 
 application {

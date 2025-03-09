@@ -7,13 +7,11 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
-import com.example.model.DynamicEntity
-import com.example.model.DynamicResult
-import com.example.model.* 
+import com.example.model.*
 
 // MST data source simulation
 object MstDataSource {
-    private val tables = mutableMapOf<String, List<com.example.model.DynamicEntity>>()
+    private val tables = mutableMapOf<String, List<DynamicEntity>>()
 
     init {
         // Simulate MST data
@@ -114,48 +112,3 @@ fun main() {
         }
     }.start(wait = true)
 }
-
-// Query parameters wrapper
-data class QueryArgs(
-    val tableName: String,
-    val fields: List<String>,
-    val conditions: List<Condition>? = null,
-    val pagination: PaginationInput? = null,
-    val sorting: List<SortField>? = null,
-    val transforms: List<Transform>? = null
-)
-
-// Input type definitions
-data class Condition(
-    val field: String,
-    val operator: OperatorType,
-    val value: String?
-)
-
-enum class OperatorType {
-    EQ, NE, GT, LT, GTE, LTE, LIKE, IN
-}
-
-data class PaginationInput(
-    val offset: Int,
-    val limit: Int
-)
-
-data class SortField(
-    val field: String,
-    val direction: SortDirection
-)
-
-enum class SortDirection {
-    ASC, DESC
-}
-
-data class Transform(
-    val field: String,
-    val type: TransformType,
-    val format: String?
-)
-
-enum class TransformType {
-    DATE, NUMBER, STRING
-} 

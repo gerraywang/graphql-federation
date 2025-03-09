@@ -13,6 +13,7 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
@@ -23,14 +24,14 @@ subprojects {
     group = "com.example"
     version = "1.0-SNAPSHOT"
 
+    configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
         }
-    }
-
-    configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common"))
+    implementation(project(":subgraphs:common"))
     implementation(kotlin("stdlib"))
     
     // Ktor
