@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import com.example.config.TableRelations
 import com.example.config.JoinTable
 import com.example.model.*  // 导入共享模型类
+import java.util.Locale  // 添加这行
 
 class ApiResource(
     private val graphQLService: GraphQLService,
@@ -112,7 +113,7 @@ class ApiResource(
     private fun buildConditions(conditions: List<com.example.model.Condition>): String {
         if (conditions.isEmpty()) return ""
         return "conditions: [${conditions.map { 
-            "{field: \"${it.field}\", operator: ${it.operator.toUpperCase()}, value: ${formatValue(it.value)}}"
+            "{field: \"${it.field}\", operator: ${it.operator.toString().uppercase(Locale.getDefault())}, value: ${formatValue(it.value)}}"
         }.joinToString(",")}]"
     }
 
