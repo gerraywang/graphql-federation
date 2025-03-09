@@ -19,4 +19,26 @@ queries:
     joins:
       - tableName: inventory
         fields: [quantity, location, status]
-        alias: inventory 
+        alias: inventory
+
+  order-customer:
+    mainTable:
+      tableName: order
+      fields: [orderNo, amount, status, createTime]
+      alias: order
+    relationName: order-customer
+    joins:
+      - tableName: customer
+        fields: [name, phone, email]
+        alias: customer
+
+  order-payment:
+    mainTable:
+      tableName: order
+      fields: [orderNo, amount, status]
+      alias: order
+    relationName: order-payment
+    joins:
+      - tableName: payment
+        fields: [paymentNo, paymentAmount, paymentStatus]
+        alias: payment 

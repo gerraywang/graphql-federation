@@ -5,7 +5,7 @@ relations:
       - table: "order"
         mainField: "id"
         joinField: "customerId"
-        type: "one_to_many"
+        type: "ONE_TO_MANY"
   
   - name: "order-payment"
     mainTable: "order"
@@ -13,7 +13,7 @@ relations:
       - table: "payment"
         mainField: "id"
         joinField: "orderId"
-        type: "one_to_one"
+        type: "ONE_TO_ONE"
   
   - name: "customer-orders-payments"
     mainTable: "customer"
@@ -21,9 +21,27 @@ relations:
       - table: "order"
         mainField: "id"
         joinField: "customerId"
-        type: "one_to_many"
+        type: "ONE_TO_MANY"
       - table: "payment"
         mainField: "orderId"
         joinField: "orderId"
-        type: "one_to_one"
-        parentTable: "order" 
+        type: "ONE_TO_ONE"
+        parentTable: "order"
+
+  # 添加订单-客户关系
+  - name: "order-customer"
+    mainTable: "order"
+    joinTables:
+      - table: "customer"
+        mainField: "customerId"
+        joinField: "id"
+        type: "MANY_TO_ONE"
+
+  # 添加订单-支付关系
+  - name: "order-payment"
+    mainTable: "order"
+    joinTables:
+      - table: "payment"
+        mainField: "id"
+        joinField: "orderId"
+        type: "ONE_TO_ONE" 

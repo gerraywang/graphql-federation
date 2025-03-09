@@ -2,6 +2,7 @@ package com.example.handler
 
 import com.example.GraphQLService
 import com.example.config.TableRelations
+import com.example.config.QueryDefinition
 import com.example.model.*
 import com.example.util.QueryBuilder
 

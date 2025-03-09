@@ -9,6 +9,8 @@ import io.ktor.serialization.gson.*
 import io.ktor.server.routing.*
 import com.example.config.TableRelationsLoader
 import com.example.config.QueryDefinitions
+import com.example.handler.CommonQueryHandler
+import com.example.order.orderRoutes
 
 fun main() {
     val tableRelations = TableRelationsLoader.load()
@@ -23,12 +25,16 @@ fun main() {
         }
         
         val graphQLService = GraphQLService()
-        val apiResource = ApiResource(graphQLService, tableRelations, queryDefinitions)
+        val commonQueryHandler = CommonQueryHandler(graphQLService, tableRelations, queryDefinitions)
         
         routing {
-            with(apiResource) { 
+            // 通用查询路由
+            with(ApiResource(commonQueryHandler)) { 
                 apiRoutes()
             }
+            
+            // 订单专用路由
+            orderRoutes(commonQueryHandler)
         }
     }.start(wait = true)
 } 

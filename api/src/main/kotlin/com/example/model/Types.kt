@@ -1,5 +1,10 @@
 package com.example.model
 
+// 查询配置
+data class QueryConfig(
+    val queries: List<String>
+)
+
 // 表查询
 data class TableQuery(
     val tableName: String,
