@@ -26,7 +26,7 @@ A demonstration of GraphQL Federation using Kotlin, Apollo Router, and Ktor.
 
 1. Generate the supergraph schema:
 ```bash
-rover supergraph compose --config supergraph.yaml > supergraph.graphql
+cd gateway && rover supergraph compose --config supergraph.yaml > supergraph.graphql && cd ..
 ```
 
 2. Build the project:
@@ -43,7 +43,7 @@ rover supergraph compose --config supergraph.yaml > supergraph.graphql
 ./gradlew :subgraphs:tran:run
 
 # Start Apollo Router
-RUST_LOG=debug ./router --config router.yaml --supergraph supergraph.graphql
+cd gateway && RUST_LOG=debug ./router --config router.yaml --supergraph supergraph.graphql && cd ..
 
 # Start API Gateway
 ./gradlew :api:run
