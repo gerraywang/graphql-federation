@@ -9,6 +9,7 @@ import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
 import com.example.model.DynamicEntity
 import com.example.model.DynamicResult
+import com.example.model.*  // 添加这行导入
 
 // MST数据源模拟
 object MstDataSource {
@@ -56,7 +57,9 @@ object MstDataSource {
 fun main() {
     embeddedServer(Netty, port = 4001) {
         install(ContentNegotiation) {
-            gson()
+            gson {
+                setPrettyPrinting()
+            }
         }
         install(CORS) {
             anyHost()
@@ -66,8 +69,29 @@ fun main() {
             endpoint = "/graphql"
             schema {
                 query("queryMstTable") {
-                    resolver { tableName: String, fields: List<String> ->
-                        MstDataSource.getTableData(tableName, fields)
+                    resolver { args: QueryArgs ->
+                        // 处理查询条件
+                        var results = MstDataSource.getTableData(args.tableName, args.fields)
+                        
+                        // 应用条件过滤
+                        args.conditions?.let { conds ->
+                            results = results.filter { result ->
+                                conds.all { condition ->
+                                    when (condition.operator) {
+                                        OperatorType.GT -> (result.fieldValue.toDoubleOrNull() ?: 0.0) > (condition.value?.toDoubleOrNull() ?: 0.0)
+                                        OperatorType.EQ -> result.fieldValue == condition.value
+                                        else -> true
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 应用分页
+                        args.pagination?.let { page ->
+                            results = results.drop(page.offset).take(page.limit)
+                        }
+                        
+                        results
                     }
                 }
 
@@ -77,19 +101,61 @@ fun main() {
                     }
                 }
 
-                type<DynamicResult> {
-                    description = "Dynamic query result for MST"
-                    property(DynamicResult::id) {
-                        description = "Entity ID"
-                    }
-                    property(DynamicResult::fieldName) {
-                        description = "Field name"
-                    }
-                    property(DynamicResult::fieldValue) {
-                        description = "Field value"
-                    }
-                }
+                type<DynamicResult>()
+                type<Condition>()
+                type<PaginationInput>()
+                type<SortField>()
+                type<Transform>()
+                
+                enum<OperatorType>()
+                enum<SortDirection>()
+                enum<TransformType>()
             }
         }
     }.start(wait = true)
+}
+
+// 查询参数包装类
+data class QueryArgs(
+    val tableName: String,
+    val fields: List<String>,
+    val conditions: List<Condition>? = null,
+    val pagination: PaginationInput? = null,
+    val sorting: List<SortField>? = null,
+    val transforms: List<Transform>? = null
+)
+
+// 输入类型定义
+data class Condition(
+    val field: String,
+    val operator: OperatorType,
+    val value: String?
+)
+
+enum class OperatorType {
+    EQ, NE, GT, LT, GTE, LTE, LIKE, IN
+}
+
+data class PaginationInput(
+    val offset: Int,
+    val limit: Int
+)
+
+data class SortField(
+    val field: String,
+    val direction: SortDirection
+)
+
+enum class SortDirection {
+    ASC, DESC
+}
+
+data class Transform(
+    val field: String,
+    val type: TransformType,
+    val format: String?
+)
+
+enum class TransformType {
+    DATE, NUMBER, STRING
 } 

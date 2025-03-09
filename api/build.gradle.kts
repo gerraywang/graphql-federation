@@ -19,6 +19,9 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
     implementation("io.ktor:ktor-client-gson:2.3.7")
     
+    // YAML
+    implementation("org.yaml:snakeyaml:2.2")
+    
     // Logging
     implementation("ch.qos.logback:logback-classic:1.4.11")
 }

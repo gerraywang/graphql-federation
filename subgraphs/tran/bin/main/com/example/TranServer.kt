@@ -9,6 +9,7 @@ import io.ktor.serialization.gson.*
 import com.apurebase.kgraphql.GraphQL
 import com.example.model.DynamicEntity
 import com.example.model.DynamicResult
+import com.example.model.*
 
 // Transaction数据源模拟
 object TranDataSource {
@@ -59,7 +60,9 @@ object TranDataSource {
 fun main() {
     embeddedServer(Netty, port = 4002) {
         install(ContentNegotiation) {
-            gson()
+            gson {
+                setPrettyPrinting()
+            }
         }
         install(CORS) {
             anyHost()
@@ -69,8 +72,26 @@ fun main() {
             endpoint = "/graphql"
             schema {
                 query("queryTranTable") {
-                    resolver { tableName: String, fields: List<String> ->
-                        TranDataSource.getTableData(tableName, fields)
+                    resolver { args: QueryArgs ->
+                        var results = TranDataSource.getTableData(args.tableName, args.fields)
+                        
+                        args.conditions?.let { conds ->
+                            results = results.filter { result ->
+                                conds.all { condition ->
+                                    when (condition.operator) {
+                                        OperatorType.GT -> (result.fieldValue.toDoubleOrNull() ?: 0.0) > (condition.value?.toDoubleOrNull() ?: 0.0)
+                                        OperatorType.EQ -> result.fieldValue == condition.value
+                                        else -> true
+                                    }
+                                }
+                            }
+                        }
+                        
+                        args.pagination?.let { page ->
+                            results = results.drop(page.offset).take(page.limit)
+                        }
+                        
+                        results
                     }
                 }
 
@@ -80,18 +101,15 @@ fun main() {
                     }
                 }
 
-                type<DynamicResult> {
-                    description = "Dynamic query result for Transaction"
-                    property(DynamicResult::id) {
-                        description = "Entity ID"
-                    }
-                    property(DynamicResult::fieldName) {
-                        description = "Field name"
-                    }
-                    property(DynamicResult::fieldValue) {
-                        description = "Field value"
-                    }
-                }
+                type<DynamicResult>()
+                type<Condition>()
+                type<PaginationInput>()
+                type<SortField>()
+                type<Transform>()
+                
+                enum<OperatorType>()
+                enum<SortDirection>()
+                enum<TransformType>()
             }
         }
     }.start(wait = true)

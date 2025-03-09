@@ -7,8 +7,11 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.gson.*
 import io.ktor.server.routing.*
+import com.example.config.TableRelationsLoader
 
 fun main() {
+    val tableRelations = TableRelationsLoader.load()
+    
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
             gson()
@@ -18,7 +21,7 @@ fun main() {
         }
         
         val graphQLService = GraphQLService()
-        val apiResource = ApiResource(graphQLService)
+        val apiResource = ApiResource(graphQLService, tableRelations)
         
         routing {
             with(apiResource) { 

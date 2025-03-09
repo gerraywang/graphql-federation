@@ -1,5 +1,5 @@
 type Query {
-  queryMstTable(tableName: String!, fields: [String!]!): [DynamicResult!]!
+  queryMstTable(args: QueryArgs!): [DynamicResult!]!
   getMstAvailableFields(tableName: String!): [String!]!
 }
 
@@ -7,4 +7,57 @@ type DynamicResult {
   id: ID!
   fieldName: String!
   fieldValue: String!
+}
+
+input QueryArgs {
+  tableName: String!
+  fields: [String!]!
+  conditions: [Condition!]
+  pagination: PaginationInput
+  sorting: [SortField!]
+  transforms: [Transform!]
+}
+
+input Condition {
+  field: String!
+  operator: OperatorType!
+  value: String
+}
+
+enum OperatorType {
+  EQ
+  NE
+  GT
+  LT
+  GTE
+  LTE
+  LIKE
+  IN
+}
+
+input PaginationInput {
+  offset: Int!
+  limit: Int!
+}
+
+input SortField {
+  field: String!
+  direction: SortDirection!
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+input Transform {
+  field: String!
+  type: TransformType!
+  format: String
+}
+
+enum TransformType {
+  DATE
+  NUMBER
+  STRING
 } 
