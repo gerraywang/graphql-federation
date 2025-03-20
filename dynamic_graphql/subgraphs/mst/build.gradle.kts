@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":subgraphs:common"))
+    implementation(project(":dynamic_graphql:subgraphs:common"))
     implementation(kotlin("stdlib"))
     
     // Ktor

@@ -8,7 +8,7 @@
 
 rootProject.name = "graphql-services"
 
-include(":subgraphs:common")
-include(":subgraphs:mst")
-include(":subgraphs:tran")
-include(":api")
+include(":dynamic_graphql:subgraphs:common")
+include(":dynamic_graphql:subgraphs:mst")
+include(":dynamic_graphql:subgraphs:tran")
+include(":dynamic_graphql:api")

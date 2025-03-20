@@ -52,7 +52,7 @@ The project implements a federated GraphQL architecture:
 
 1. Generate the supergraph schema:
 ```bash
-cd gateway && rover supergraph compose --config supergraph.yaml > supergraph.graphql && cd ..
+rover supergraph compose --config dynamic_graphql/gateway/supergraph.yaml > dynamic_graphql/gateway/supergraph.graphql
 ```
 
 2. Build the project:
@@ -63,16 +63,16 @@ cd gateway && rover supergraph compose --config supergraph.yaml > supergraph.gra
 3. Start the services (in order):
 ```bash
 # 1. Start Master Data Service
-./gradlew :subgraphs:mst:run
+./gradlew :dynamic_graphql:subgraphs:mst:run
 
 # 2. Start Transaction Service
-./gradlew :subgraphs:tran:run
+./gradlew :dynamic_graphql:subgraphs:tran:run
 
 # 3. Start Apollo Router
-cd gateway && RUST_LOG=debug ./router --config router.yaml --supergraph supergraph.graphql && cd ..
+RUST_LOG=debug ./dynamic_graphql/gateway/router --config ./dynamic_graphql/gateway/router.yaml --supergraph ./dynamic_graphql/gateway/supergraph.graphql
 
 # 4. Start API Gateway
-./gradlew :api:run
+./gradlew :dynamic_graphql:api:run
 ```
 
 
