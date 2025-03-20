@@ -1,0 +1,22 @@
+homepage:
+  enabled: false
+supergraph:
+  introspection: true
+  listen: 0.0.0.0:4000
+  path: /graphql
+
+cors:
+  allow_any_origin: true
+  allow_headers: ["*"]
+
+headers:
+  all:
+    request:
+      - propagate:
+          named: "Authorization"
+
+sandbox:
+  enabled: true
+
+include_subgraph_errors:
+  all: true

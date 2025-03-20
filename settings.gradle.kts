@@ -12,3 +12,8 @@ include(":dynamic_graphql:subgraphs:common")
 include(":dynamic_graphql:subgraphs:mst")
 include(":dynamic_graphql:subgraphs:tran")
 include(":dynamic_graphql:api")
+
+include(":static_graphql:subgraphs:common")
+include(":static_graphql:subgraphs:mst")
+include(":static_graphql:subgraphs:tran")
+include(":static_graphql:api")

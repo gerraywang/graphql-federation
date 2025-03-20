@@ -1,0 +1,25 @@
+type Query {
+  getOrders(pagination: PaginationInput): [Order!]!
+  getPayments(pagination: PaginationInput): [Payment!]!
+}
+
+type Order {
+  id: ID!
+  orderNo: String!
+  amount: Float!
+  customerId: String!
+  status: String!
+}
+
+type Payment {
+  id: ID!
+  paymentNo: String!
+  orderId: String!
+  amount: Float!
+  status: String!
+}
+
+input PaginationInput {
+  offset: Int!
+  limit: Int!
+} 

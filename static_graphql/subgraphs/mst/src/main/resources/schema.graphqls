@@ -1,0 +1,23 @@
+type Query {
+  getCustomers(pagination: PaginationInput): [Customer!]!
+  getProducts(pagination: PaginationInput): [Product!]!
+}
+
+type Customer {
+  id: ID!
+  name: String!
+  age: Int!
+  address: String!
+}
+
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  stock: Int!
+}
+
+input PaginationInput {
+  offset: Int!
+  limit: Int!
+} 
